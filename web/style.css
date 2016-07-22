@@ -1,0 +1,86 @@
+html{
+    height: 100%;
+}
+body {
+    /*background: url(https://images.unsplash.com/photo-1466699514193-d2327ed2cccb?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&s=70e0c808d754faeaae8c27af795a2a58);*/
+    background:#59B3FF;
+    /*background: url(https://images.unsplash.com/reserve/unsplash_52d9133506548_1.JPG?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&s=042c89069f7168c195d5119cfdf28a30);*/
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: Lato;
+}
+#content{
+    text-align: center;
+    padding-top: 25%;
+    color: white;
+    text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
+    0px  8px 13px rgba(0,0,0,0.1),
+    0px  18px 23px rgba(0,0,0,0.1);
+
+}
+h1{
+    font-weight:700;
+    font-size: 5em;
+    color: #fff;
+}
+#content hr{
+    width: 400px;
+    border-top: 1px solid #f8f8f8;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.forma{
+    margin: 15% auto 0;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 1.2em;
+    width: 35%;
+    padding:2%;
+}
+#form_grade{
+
+    color: #fff;
+    font-size: 1.2em;
+    width: 25%;
+    padding:2%;
+}
+.account{
+
+    margin-top: 5%;
+}
+.info{
+    background: rgba(0,0,0,0.2);
+    color: white;
+    font-size: 1.5em;
+}
+.info li{
+    display: inline;
+    color: white;
+}
+.info a{
+
+    color: white;
+    padding: 1% 2% 1%;
+}
+.options{
+    margin-top: 6%;
+    background: transparent;
+    width: 20%;
+    padding: 2%;
+    float: left;
+    font-size: 1.3em;
+}
+.options .btn{
+    margin:1.5%;
+}
+.edit{
+    color: white;
+    font-size: 1.3em;
+    padding: 1%;
+    margin-top: 6%;
+    width: 30%;
+    background: rgba(0,0,0,0.8);
+}
+.edit .form-group{
+    padding-top: 1%;
+}

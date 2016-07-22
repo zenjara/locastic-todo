@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    <div class="container forma" >
+        <form action="" method="post">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input  class="form-control" type="text" id="name" name="name" />
+            </div>
+            <hr>
+            <h4>Tasks</h4><br><input type="submit" id="add_task" name="add_task" class="add_task btn btn-primary" value="+ Task"/>
+            <br><br>
+            <div class="input_fields_wrap">
+                {#<h5>Task 1</h5> <button class="delete">Delete</button>
+                <div class="form-group">
+                    <label for="task_name">Task name: </label>
+                    <input class="form-control"  id="task_name" name="taskName" />
+                </div>
+                <div class="form-group">
+                    <label>Task priority: </label>
+                    <select name="priority">
+                        <option  id="priority1" name="priority1" value="high" selected >High</option>
+                        <option  id="priority2" name="priority2 "value="normal">Normal</option>
+                        <option  id="priority3" name="priority3" value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Deadline: </label>
+                    <input class="form-control"  id="deadline" name="deadline" type="date" />
+                </div>
+                <br><br>#}
+            </div>
+            {#
+                If you want to control the URL the user
+                is redirected to on success (more details below)
+                <input type="hidden" name="_target_path" value="/account" />
+            #}
+
+            <button type="submit" name="add_list" class="btn btn-success">Add list</button>
+        </form>
+
+    </div>
+
+{% endblock body %}

@@ -1,0 +1,11 @@
+mts:
+    resource: "@MtsBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+
+logout:
+      pattern:   /logout

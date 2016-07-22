@@ -1,0 +1,410 @@
+<?php
+
+namespace MtsBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+/**
+ * Korisnik
+ *
+ * @ORM\Table(name="korisnik")
+ * @ORM\Entity(repositoryClass="MtsBundle\Repository\KorisnikRepository")
+ * @UniqueEntity(fields="email", message="Email already taken")
+ * @ORM\HasLifecycleCallbacks()
+ */
+class Korisnik implements UserInterface, \Serializable
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=255, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     */
+    private $email;
+
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(max=4096)
+     */
+    private $plainPassword;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=255, unique=true)
+     */
+    private $password;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="firstName", type="string", length=255)
+     */
+    private $firstName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="lastName", type="string", length=255)
+     */
+    private $lastName;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="registration_date", type="datetime",nullable=true)
+     */
+    private $registrationDate;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_logged_in_at", type="datetime", nullable=true)
+     */
+    private $lastLoggedInAt;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isActive", type="boolean",nullable=true)
+     */
+    private $isActive;
+
+
+    /** @ORM\OneToMany(targetEntity="Tlist", mappedBy="korisnik") */
+    protected $tlists;
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return Korisnik
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     * @return Korisnik
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string 
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * Set registrationDate
+     *
+     * @param \DateTime $registrationDate
+     * @return Korisnik
+     * @ORM\PrePersist
+     */
+
+    public function setRegistrationDate()
+    {
+        $this->registrationDate = new \DateTime();
+        return $this;
+    }
+
+    /**
+     * Get registrationDate
+     *
+     * @return \DateTime 
+     */
+    public function getRegistrationDate()
+    {
+        return $this->registrationDate;
+    }
+
+    /**
+     * Set lastLoggedInAt
+     *
+     * @param \DateTime $lastLoggedInAt
+     * @return Korisnik
+     */
+    public function setLastLoggedInAt($lastLoggedInAt)
+    {
+        $this->lastLoggedInAt = $lastLoggedInAt;
+        //$this->lastLoggedInAt = new \DateTime();
+
+        return $this;
+    }
+
+    /**
+     * Get lastLoggedInAt
+     *
+     * @return \DateTime 
+     */
+    public function getLastLoggedInAt()
+    {
+        return $this->lastLoggedInAt;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Korisnik
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->isActive = true;
+        $this->tlists = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    
+
+    /**
+     * Set firstName
+     *
+     * @param string $firstName
+     * @return Korisnik
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    /**
+     * Get firstName
+     *
+     * @return string 
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * Set lastName
+     *
+     * @param string $lastName
+     * @return Korisnik
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * Get lastName
+     *
+     * @return string 
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     * @since 5.1.0
+     */
+    public function serialize()
+    {
+        // TODO: Implement serialize() method.
+        return serialize(array(
+            $this->id,
+            $this->password,
+            // see section on salt below
+            // $this->salt,
+        ));
+    }
+
+    /**
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function unserialize($serialized)
+    {
+        // TODO: Implement unserialize() method.
+        list (
+            $this->id,
+            $this->password,
+            // see section on salt below
+            // $this->salt
+            ) = unserialize($serialized);
+    }
+
+    /**
+     * Returns the roles granted to the user.
+     *
+     * <code>
+     * public function getRoles()
+     * {
+     *     return array('ROLE_USER');
+     * }
+     * </code>
+     *
+     * Alternatively, the roles might be stored on a ``roles`` property,
+     * and populated in any number of different ways when the user object
+     * is created.
+     *
+     * @return (Role|string)[] The user roles
+     */
+    public function getRoles()
+    {
+        // TODO: Implement getRoles() method.
+        return array('ROLE_USER');
+    }
+
+    /**
+     * Returns the salt that was originally used to encode the password.
+     *
+     * This can return null if the password was not encoded using a salt.
+     *
+     * @return string|null The salt
+     */
+    public function getSalt()
+    {
+        // TODO: Implement getSalt() method.
+        return null;
+    }
+
+    /**
+     * Returns the username used to authenticate the user.
+     *
+     * @return string The username
+     */
+    public function getUsername()
+    {
+        // TODO: Implement getUsername() method.
+        return $this->email;
+    }
+
+    /**
+     * Removes sensitive data from the user.
+     *
+     * This is important if, at any given point, sensitive information like
+     * the plain-text password is stored on this object.
+     */
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($password)
+    {
+        $this->plainPassword = $password;
+    }
+
+    /**
+     * Add tlists
+     *
+     * @param \MtsBundle\Entity\Tlist $tlists
+     * @return Korisnik
+     */
+    public function addTlist(\MtsBundle\Entity\Tlist $tlists)
+    {
+        $this->tlists[] = $tlists;
+
+        return $this;
+    }
+
+    /**
+     * Remove tlists
+     *
+     * @param \MtsBundle\Entity\Tlist $tlists
+     */
+    public function removeTlist(\MtsBundle\Entity\Tlist $tlists)
+    {
+        $this->tlists->removeElement($tlists);
+    }
+
+    /**
+     * Get tlists
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTlists()
+    {
+        return $this->tlists;
+    }
+}

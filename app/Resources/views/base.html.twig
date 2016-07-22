@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}
+
+        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600italic' rel='stylesheet' type='text/css'><!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="{{ asset('bootstrap.css') }}" />
+
+        <script src="https://use.fontawesome.com/a19852c456.js"></script>
+        <link rel="stylesheet" href="{{ asset('style.css') }}" />
+        <link rel="stylesheet" href="{{ asset('table.css') }}" />
+        <link rel="stylesheet" href="{{ asset('jquery.modal.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('jquery-ui-1.9.2.custom.min.css') }}" />
+
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top ">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bla" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">MTS</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bla">
+            <ul class="nav navbar-nav">
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/register">Register <i class="fa fa-user-plus" aria-hidden="true"></i></a></li>
+                <li><a href="/login">Login <i class="fa fa-user" aria-hidden="true"></i></a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+{% block body %}
+
+{% endblock %}
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ asset('app.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('jExpand.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('jquery.modal.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('jquery-ui-1.9.2.custom.min.js') }}"></script>
+{% endblock %}
+</body>
+</html>
