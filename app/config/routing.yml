@@ -9,3 +9,5 @@ app:
 
 logout:
       pattern:   /logout
+user_first:
+    path: /dashboard

@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(name="korisnik")
  * @ORM\Entity(repositoryClass="MtsBundle\Repository\KorisnikRepository")
  * @UniqueEntity(fields="email", message="Email already taken")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Korisnik implements UserInterface, \Serializable
 {
@@ -60,6 +61,13 @@ class Korisnik implements UserInterface, \Serializable
      * @ORM\Column(name="lastName", type="string", length=255)
      */
     private $lastName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="confim_code", type="string", length=255)
+     */
+    private $confirmCode;
 
     /**
      * @var \DateTime
@@ -148,11 +156,12 @@ class Korisnik implements UserInterface, \Serializable
      *
      * @param \DateTime $registrationDate
      * @return Korisnik
+     * @ORM\PrePersist
      */
-    public function setRegistrationDate($registrationDate)
-    {
-        $this->registrationDate = $registrationDate;
 
+    public function setRegistrationDate()
+    {
+        $this->registrationDate = new \DateTime();
         return $this;
     }
 
@@ -175,6 +184,7 @@ class Korisnik implements UserInterface, \Serializable
     public function setLastLoggedInAt($lastLoggedInAt)
     {
         $this->lastLoggedInAt = $lastLoggedInAt;
+        //$this->lastLoggedInAt = new \DateTime();
 
         return $this;
     }
@@ -217,7 +227,7 @@ class Korisnik implements UserInterface, \Serializable
     public function __construct()
     {
         $this->isActive = true;
-//        $this->todoLists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tlists = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     
@@ -370,5 +380,38 @@ class Korisnik implements UserInterface, \Serializable
     public function setPlainPassword($password)
     {
         $this->plainPassword = $password;
+    }
+
+    /**
+     * Add tlists
+     *
+     * @param \MtsBundle\Entity\Tlist $tlists
+     * @return Korisnik
+     */
+    public function addTlist(\MtsBundle\Entity\Tlist $tlists)
+    {
+        $this->tlists[] = $tlists;
+
+        return $this;
+    }
+
+    /**
+     * Remove tlists
+     *
+     * @param \MtsBundle\Entity\Tlist $tlists
+     */
+    public function removeTlist(\MtsBundle\Entity\Tlist $tlists)
+    {
+        $this->tlists->removeElement($tlists);
+    }
+
+    /**
+     * Get tlists
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTlists()
+    {
+        return $this->tlists;
     }
 }

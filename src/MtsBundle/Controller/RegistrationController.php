@@ -27,75 +27,61 @@ class RegistrationController extends Controller
     {
 
         $korisnik = new Korisnik();
-        $tempKorisnik = new TempKorisnik();
         $form = $this->createForm(RegisterType::class, $korisnik);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
 
-            // 3) Encode the password (you could also do this via Doctrine listener)
-            $password = $this->get('security.password_encoder')
-                ->encodePassword($korisnik, $korisnik->getPlainPassword());
-            $korisnik->setPassword($password);
+                // 3) Encode the password (you could also do this via Doctrine listener)
+                $password = $this->get('security.password_encoder')
+                    ->encodePassword($korisnik, $korisnik->getPlainPassword());
+                $korisnik->setPassword($password);
+                $confirm_code=md5(uniqid(rand()));
+                $korisnik->setConfirmCode($confirm_code);
 
-            $confirm_code = md5(uniqid(rand()));
-            // 4) save the User!
-            $em = $this->getDoctrine()->getManager();
-            $tempKorisnik->setConfirmCode($confirm_code);
-            $tempKorisnik->setEmail($korisnik->getEmail());
-            $tempKorisnik->setPassword($korisnik->getPassword());
-            $tempKorisnik->setFirstName($korisnik->getFirstName());
-            $tempKorisnik->setLastName($korisnik->getLastName());
-//                $em->persist($korisnik);
-            $em->persist($tempKorisnik);
-            $em->flush();
+                // 4) save the User!
+                $em = $this->getDoctrine()->getManager();
 
+                $em->persist($korisnik);
+                $em->flush();
 
-            $email = $korisnik->getEmail();
-            $pass = $korisnik->getPassword();
+                // Your subject
+                $subject="Confirm your  account!";
 
-            // send e-mail to ...
-            $to = $email;
+                $header="from: TODO staff <todo@support.com>";
 
-            // Your subject
-            $subject = "Confirmation link";
-
-            // From
-            $header = "from: TODO staff <todo@todo.com>";
-
-            // Your message
-            $message = "Your Comfirmation link \r\n";
-            $message .= "Click on this link to activate your account \r\n";
-            $message .= "http://www.yourweb.com/confirmation.php?passkey=$confirm_code";
-
-            // send email
-            $sentmail = mail($to, $subject, $message, $header);
+                $message="Your Comfirmation link \r\n";
+                $message.="Click on this link to activate your account \r\n";
+                $message.="http://www.todo-locastic.com/activate/$confirm_code";
 
 
-            // if your email succesfully sent
-            if ($sentmail) {
-                echo "Your Confirmation link Has Been Sent To Your Email Address.";
-            } else {
-                echo "Cannot send Confirmation link to your e-mail address";
+                $sentmail = mail($korisnik->getEmail(),$subject,$message,$header);
+
+
+
+        if($sentmail){
+            echo "Your Confirmation link Has Been Sent To Your Email Address.";
+        }
+        else {
+            echo "Cannot send Confirmation link to your e-mail address";
+        }
+
+                $todolist= new Tlist();
+                $todolist->setName("Welcome")->setKorisnik($korisnik);
+
+                $task= new Task();
+                $task->setName("Get comfortable :)");
+                $task->setPriority("High")->setTlist($todolist);
+                $em->persist($todolist);
+                $em->persist($task);
+                $em->flush();
+                return $this->redirectToRoute('success');
             }
-            // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the user
-            $todolist = new Tlist();
-            $todolist->setName("Welcome")->setKorisnik($korisnik);
 
-            $task = new Task();
-            $task->setName("Get comfortable :)");
-            $task->setPriority("High")->setTlist($todolist);
-            $em->persist($todolist);
-            $em->persist($task);
-            $em->flush();
-            return $this->redirectToRoute('success');
 
-        }
-            return $this->render('MtsBundle:Registration:registration.html.twig', array("form" => $form->createView()));
-        }
-
+        return $this->render('MtsBundle:Registration:registration.html.twig',array("form"=> $form->createView()));
+    }
 
     /**
      * @Route("/success", name="success")
@@ -104,5 +90,25 @@ class RegistrationController extends Controller
         return $this->render(
             "MtsBundle:Registration:success.html.twig"
         );
+    }
+
+
+    /**
+     * @Route("/activate/{code}", name="activation")
+     */
+    public function activaterAction(Request $request,$code)
+    {
+
+        $em= $this->getDoctrine()->getManager();
+        $korisnik= $em->getRepository("MtsBundle:Korisnik")->findOneByConfirmCode($code);
+        if($korisnik){
+            $korisnik->setIsActivated(true);
+            return $this->redirectToRoute('success');
+        }
+        else{
+            return $this->render('MtsBundle:Dashboard:dashboard.html.twig',array("code"=>$code));
+        }
+
+
     }
 }

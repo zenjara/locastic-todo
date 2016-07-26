@@ -37,9 +37,9 @@ class Task
     private $priority;
 
     /**
-     * @var \Date
+     * @var \DateTime
      *
-     * @ORM\Column(name="deadline", type="date",nullable=true)
+     * @ORM\Column(name="deadline", type="datetime",nullable=true)
      */
     private $deadline;
 
@@ -107,28 +107,7 @@ class Task
         return $this->priority;
     }
 
-    /**
-     * Set deadline
-     *
-     * @param \Date $deadline
-     * @return Task
-     */
-    public function setDeadline($deadline)
-    {
-        $this->deadline = $deadline;
-
-        return $this;
-    }
-
-    /**
-     * Get deadline
-     *
-     * @return \Date
-     */
-    public function getDeadline()
-    {
-        return $this->deadline;
-    }
+    
 
     /**
      * @ORM\ManyToOne(targetEntity="Tlist", inversedBy="tasks")
@@ -190,5 +169,28 @@ class Task
     public function getIsCompleted()
     {
         return $this->isCompleted;
+    }
+
+    /**
+     * Set deadline
+     *
+     * @param \DateTime $deadline
+     * @return Task
+     */
+    public function setDeadline($deadline)
+    {
+        $this->deadline = $deadline;
+
+        return $this;
+    }
+
+    /**
+     * Get deadline
+     *
+     * @return \DateTime 
+     */
+    public function getDeadline()
+    {
+        return $this->deadline;
     }
 }

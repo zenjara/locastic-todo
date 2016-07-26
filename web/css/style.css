@@ -2,9 +2,7 @@ html{
     height: 100%;
 }
 body {
-    /*background: url(https://images.unsplash.com/photo-1466699514193-d2327ed2cccb?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&s=70e0c808d754faeaae8c27af795a2a58);*/
-    background:#59B3FF;
-    /*background: url(https://images.unsplash.com/reserve/unsplash_52d9133506548_1.JPG?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&s=042c89069f7168c195d5119cfdf28a30);*/
+    background:#5AC8A6;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -37,42 +35,31 @@ h1{
     width: 35%;
     padding:2%;
 }
-#form_grade{
-
-    color: #fff;
+.reg_forma {
+    margin: 15% auto 0;
+    background: rgba(0,0,0,0.7);
     font-size: 1.2em;
-    width: 25%;
+    width: 35%;
     padding:2%;
 }
+.reg_forma label {
+    color: white;
+    margin-right: 2%;
+}
+.reg_forma  li{
+    color: white;
+    margin-right: 2%;
+}
+
 .account{
 
     margin-top: 5%;
 }
-.info{
-    background: rgba(0,0,0,0.2);
-    color: white;
-    font-size: 1.5em;
-}
-.info li{
-    display: inline;
-    color: white;
-}
-.info a{
 
-    color: white;
-    padding: 1% 2% 1%;
+#addTask, #editTask label{
+    color: #000;
 }
-.options{
-    margin-top: 6%;
-    background: transparent;
-    width: 20%;
-    padding: 2%;
-    float: left;
-    font-size: 1.3em;
-}
-.options .btn{
-    margin:1.5%;
-}
+
 .edit{
     color: white;
     font-size: 1.3em;
@@ -83,4 +70,10 @@ h1{
 }
 .edit .form-group{
     padding-top: 1%;
+}
+
+.error_msg{
+    font-size: 2em;
+    text-align: center;
+    margin-top: 10%;
 }

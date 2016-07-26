@@ -63,6 +63,13 @@ class Korisnik implements UserInterface, \Serializable
     private $lastName;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="confimCode", type="string", length=255)
+     */
+    private $confirmCode;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="registration_date", type="datetime",nullable=true)
@@ -219,7 +226,7 @@ class Korisnik implements UserInterface, \Serializable
      */
     public function __construct()
     {
-        $this->isActive = true;
+        $this->isActive = false;
         $this->tlists = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -406,5 +413,28 @@ class Korisnik implements UserInterface, \Serializable
     public function getTlists()
     {
         return $this->tlists;
+    }
+
+    /**
+     * Set confirmCode
+     *
+     * @param string $confirmCode
+     * @return Korisnik
+     */
+    public function setConfirmCode($confirmCode)
+    {
+        $this->confirmCode = $confirmCode;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmCode
+     *
+     * @return string 
+     */
+    public function getConfirmCode()
+    {
+        return $this->confirmCode;
     }
 }

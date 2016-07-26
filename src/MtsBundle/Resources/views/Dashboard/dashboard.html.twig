@@ -7,32 +7,46 @@
         {% if todoLists is not empty %}
             <h3 class="text-center">You have following todo lists:</h3>
 
-                {% set numberNotCompleted = 0 %}
+
 
             <table id="report" class="dataTable" cellspacing="0" width="100%">
                 <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Name</th>
-                    <th>Created at</th>
+                    <th id="table_name">Name</th>
+                    <th id="created_at">Created at</th>
                     <th>Number of tasks</th>
                     <th>Incomplete tasks</th>
+                    <th>Completed [%]</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {%for list in todoLists %}
+                    {% set numberNotCompleted = 0 %}
+                    {% set length = list.getTasks|length %}
+                    {% if  list.getTasks is not empty %}
+                        {%for task in list.getTasks %}
+                            {% if not task.getIsCompleted %}
+                                {%  set numberNotCompleted= numberNotCompleted+1 %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if  list.getTasks is not empty %}
+                        {% set completed = (list.getTasks|length-numberNotCompleted)/list.getTasks|length *100%}
+                    {% endif %}
                     <tr class="master">
                         <td class="id_list"> {{ list.id}}</td>
                         <td> {{ list.name }}</td>
                         <td>{% if list.getCreatedAt %}{{ list.getCreatedAt|localizeddate('short', 'short') }}{% endif %}</td>
                         <td>{{ list.getTasks|length }}</td>
                         <td>{{ numberNotCompleted }}</td>
+                        <td>{{ completed }} %</td>
                         <td><button class="btn btn-danger delete-list">Delete List</button><button class="btn btn-success add-task">Add Task</button></td>
 
                     </tr>
                     <tr>
-                        <td class="tasks-table" colspan="6">
+                        <td class="tasks-table" colspan="7">
                             <table  class="dataTable tasks-table" cellspacing="0" width="100%">
                                 <thead>
                                 <tr>
@@ -46,28 +60,19 @@
                                 </thead>
                                 <tbody>
                                 {%for task in list.getTasks %}
-                                    {% if not task.getIsCompleted %}
-                                        {%  set numberNotCompleted= numberNotCompleted+1 %}
-                                    {% endif %}
                                     {% if task is not empty %}
                                     <tr class="tasks-table">
                                         <td class="id"> {{ task.id }}</td>
                                         <td class="name"> {{ task.name }}</td>
                                         <td>{{ task.priority }}</td>
                                         <td>{{ task.deadline| localizeddate('long', 'short') }}</td>
-                                        <td>{% if task.getIsCompleted %} Completed  {% else %} Not completed {% endif %}</td>
-                                        <td><button class="btn btn-danger delete-task">Delete Task</button><button class="btn btn-info edit-task">Edit Task</button></td>
+                                        <td class="status">{% if task.getIsCompleted %} Completed  {% else %} Not completed {% endif %}</td>
+                                        <td><button class="btn btn-danger delete-task">Delete Task</button><button class="btn btn-info edit-task">Edit Task</button> {% if not task.getIsCompleted %} <button class="btn btn-success complete-task">Complete Task</button>{% endif %}</td>
 
                                     </tr>
                                     {% endif %}
 
-                       {# <ul class="text-center">
-                            <li> Task: {{ task.name }}</li><br>
-                            <li>Priority: {{ task.priority }}</li><br>
-                            <li>Deadline: {{ task.deadline| localizeddate('long', 'short') }}</li><br>
-                            <li>Status: {{ task.getIsCompleted }}</li><br>
-                        </ul>
-                        <button class="delete">Delete Task</button>#}
+
                     {% endfor %}
                                 </tbody>
                             </table>
@@ -81,41 +86,7 @@
             </div>
 
 
-{#
-                    {%for list in todoLists %}
-                        <div class="container well info">
-                        <div class="subjects">
-                            <ul class="text-center">
-                                <li>Todo List: {{ list.name }}</li><br>
-                                <li>Created at: {{ list.getCreatedAt| localizeddate('short', 'short') }}</li><br>
-                                <li>Number of taks: {{ list.getTasks|length }}</li><br>
-                                <li>Number of not completed taks: {{ numberNotCompleted }}</li>
-                        <button class="btn btn-danger">Delete List</button>
-                        <hr>
 
-                            {%for task in list.getTasks %}
-                                {% if not task.getIsCompleted %}
-                                    {%  set numberNotCompleted= numberNotCompleted+1 %}
-                                {% endif %}
-                                <div class="tasks">
-                                    <div>
-                                            <ul class="text-center">
-                                                <li> Task: {{ task.name }}</li><br>
-                                                <li>Priority: {{ task.priority }}</li><br>
-                                                <li>Deadline: {{ task.deadline| localizeddate('long', 'short') }}</li><br>
-                                                <li>Status: {{ task.getIsCompleted }}</li><br>
-                                            </ul>
-                                            <button class="delete">Delete Task</button>
-                                <hr>
-                                    </div>
-                                </div>
-                                        </ul>
-                                    </div>
-                                </div>
-                    {% endfor %}
-
-
-                    {% endfor %}#}
 
             {% else %}
                 <h4>You have no todo Lists!</h4>
@@ -123,8 +94,10 @@
 
         <div class="container options">
 
-            <a href="/dashboard/add"><button class="btn btn-default">Add new todo list</button></a><br>
-            <a href="{{ path('logout') }}">Logout</a>
+            <a href="/dashboard/add"><button class="btn btn-success">Add new TODO list</button></a><br>
+            <a href="{{ path('logout') }}" class="btn btn-primary">Logout</a>
+
+
             <div id="addTask" class="container forma">
                 <form   action="" method="post" >
 
@@ -132,11 +105,11 @@
                     <hr>
                     <div class="form-group">
                         <label for="task_name">Task name: </label>
-                        <input class="form-control"  id="task_namez" name="taskName'" />
+                        <input class="form-control"  id="task_name" name="taskName'" required/>
                     </div>
                     <div class="form-group">
                         <label>Task priority:</label>
-                        <select name="priority">
+                        <select name="priority" class="priority">
                             <option  id="priority1" name="priority1" value="high" selected >High</option>
                             <option  id="priority2" name="priority2 "value="normal">Normal</option>
                             <option  id="priority3" name="priority3" value="low">Low</option>
@@ -144,9 +117,9 @@
                     </div>
                     <div class="form-group">
                         <label for="deadline">Deadline: </label>
-                        <input class="form-control"  id="deadline" name="deadline" type="date" />
+                        <input class="form-control deadline"  id="deadline" name="deadline" type="date" />
                     </div>
-                    <input type="submit" id="task_add" name="task_add" value="Add Task" class="btn btn-success">
+                    <input type="submit" id="task_add" name="task_add" value="Add Task" class="btn btn-success ">
                     </form>
             </div>
 
@@ -154,15 +127,15 @@
 
         <form id="editTask"  action="" method="post" >
 
-            <h5>New Task</h5>
+            <h5>Edit Task</h5>
             <hr>
             <div class="form-group">
                 <label for="task_name">Task name: </label>
-                <input class="form-control task-name"  id="task_name" name="taskName'" />
+                <input class="form-control task-name"  id="task_name" name="taskName'" required/>
             </div>
             <div class="form-group">
                 <label>Task priority:</label>
-                <select name="priority">
+                <select name="priority" class="priority">
                     <option  id="priority1" name="priority1" value="high" selected >High</option>
                     <option  id="priority2" name="priority2 "value="normal">Normal</option>
                     <option  id="priority3" name="priority3" value="low">Low</option>
@@ -170,9 +143,9 @@
             </div>
             <div class="form-group">
                 <label for="deadline">Deadline: </label>
-                <input class="form-control"  id="deadline" name="deadline" type="date" />
+                <input class="form-control deadline"  id="deadline" name="deadline" type="date" />
             </div>
-            <input type="submit" id="task_edit" name="task_add" value="Edit Task" class="btn btn-success">
+            <input type="submit" id="task_edit"  value="Edit Task" class="btn btn-success">
         </form>
     </div>
 

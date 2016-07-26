@@ -14,6 +14,8 @@ use MtsBundle\Entity\Tlist;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\Date;
+
 
 class DashboardController extends Controller
 {
@@ -24,25 +26,22 @@ class DashboardController extends Controller
     {
         $korisnik = $this->get("security.token_storage")->getToken()->getUser();
         $todoLists = $korisnik->getTlists();
-        $counterNotCompleted=0;
-        /*foreach ($todoLists as $list) {
-            $tasks= $list->getTasks();
-            foreach($tasks as $task){
-                if(!$task->getIsCompleted()){
-                    $counterNotCompleted++;
-                }
-            }
-        }*/
-//        $tasks= $todoLists->getTasks();
-        return $this->render("MtsBundle:Dashboard:dashboard.html.twig", array(
-            "korisnik" => $korisnik,
-            "todoLists" => $todoLists,
 
-        ));
+        if ($korisnik->getIsActive()) {
+            return $this->render("MtsBundle:Dashboard:dashboard.html.twig", array(
+                "korisnik" => $korisnik,
+                "todoLists" => $todoLists,
+
+            ));
+        } else {
+            return $this->render("MtsBundle:Dashboard:notActivated.html.twig", array(
+                "korisnik" => $korisnik,
+            ));
+        }
     }
 
     /**
-     * @Route("/delete", name="delete")
+     * @Route("/dashboard/delete", name="delete")
      */
 
     public function deleteAction(Request $request)
@@ -94,6 +93,39 @@ class DashboardController extends Controller
     }
 
     /**
+     * @Route("/dashboard/complete", name="complete")
+     */
+
+    public function completeAction(Request $request)
+    {
+        $korisnik = $this->get("security.token_storage")->getToken()->getUser();
+        $todoLists = $korisnik->getTlists();
+        $em = $this->getDoctrine()->getManager();
+
+
+        if(isset($_GET['id'])) {
+            $task = $em->getRepository('MtsBundle:Task')->findOneById($_GET['id']);
+
+            if (!$task) {
+                throw $this->createNotFoundException(
+                    'No task found for id '.$_GET['id']
+                );
+            }
+            $task->setIsCompleted(true);
+            $em->persist($task);
+            $em->flush();
+
+
+            echo "ok";
+        }
+
+
+        return $this->render('MtsBundle:Dashboard:dashboard.html.twig',array("korisnik" => $korisnik,
+        "todoLists" => $todoLists,)
+        );
+    }
+
+    /**
      * @Route("/dashboard/add", name="addForm")
      */
     public function addAction(Request $request)
@@ -110,15 +142,15 @@ class DashboardController extends Controller
                 $todolist->setName($_POST["name"]);
                 $todolist->setKorisnik($korisnik);
 
-
-//                if(empty($_POST["add_task"])){
-                for($i=1;$i<6;$i++){
-                        if(isset($_POST["taskName{$i}"])) {
-                            $task= new Task();
+                    for ($i = 1; $i < 6; $i++) {
+                        if (isset($_POST["taskName{$i}"])) {
+                            $task = new Task();
                             $task->setName($_POST["taskName{$i}"]);
                         }
-//                    $task->setDeadline($_POST["deadline"]);
-                        if(isset($_POST["priority{$i}"])){
+                        if (isset($_POST["deadline{$i}"])) {
+                            $task->setDeadline(new \DateTime($_POST["deadline{$i}"]));
+                        }
+                        if (isset($_POST["priority{$i}"])) {
                             $priority{$i} = $_POST["priority{$i}"];
                             switch ($priority{$i}) {
                                 case 'high':
@@ -134,28 +166,28 @@ class DashboardController extends Controller
                                     # code...
                                     break;
                             }
+                            $task->setTlist($todolist);
+                            $em->persist($task);
+                        }
                     }
-                        $task->setTlist($todolist);
-                        $em->persist($task);
-//                        $em->flush();
 
 
 
-                }
-                $em= $this->getDoctrine()->getManager();
+
+
+//                $em= $this->getDoctrine()->getManager();
                 $em->persist($todolist);
 
                 $em->flush();
-                return $this->render('MtsBundle:Dashboard:addTodo.html.twig');
-
+                return $this->Redirect("/dashboard");
             }
-            if (isset($_POST["dialog_task_add"])) {
+            if (isset($_POST["dialog_task_name"])) {
 
                 $task = new Task();
-                $todolist= $em->getRepository('MtsBundle:Tlist')->findOneByName($_POST["dialog_list_name"]);
+                $todolist= $em->getRepository('MtsBundle:Tlist')->findOneById($_POST["dialog_list_id"]);
 
                 $task->setName($_POST["dialog_task_name"]);
-                //$task->setDeadline($_POST["dialog_task_deadline"]);
+                $task->setDeadline(new \DateTime($_POST["dialog_task_deadline"]));
                 if(isset($_POST["dialog_task_priority"])) {
                     $priority_dialog = $_POST["dialog_task_priority"];
                     switch ($priority_dialog) {
@@ -176,7 +208,10 @@ class DashboardController extends Controller
                     $task->setTlist($todolist);
                     $em->persist($task);
                     $em->flush();
-                return $this->render('MtsBundle:Dashboard:dashboard.html.twig');
+                return $this->render('MtsBundle:Dashboard:dashboard.html.twig',array(
+                    "korisnik" => $korisnik,
+                    "todoLists" => $korisnik->getTlists(),
+                ));
 
             }
         }
@@ -195,9 +230,9 @@ class DashboardController extends Controller
         $em= $this->getDoctrine()->getManager();
 
         if(isset($_POST['dialog_task_name'])) {
-            $task = $em->getRepository('MtsBundle:Task')->findOneByName($_POST['dialog_task_name2']);
+            $task = $em->getRepository('MtsBundle:Task')->findOneById($_POST['dialog_task_id']);
             $task->setName($_POST["dialog_task_name"]);
-            //$task->setDeadline($_POST["dialog_task_deadline"]);
+            $task->setDeadline(new \DateTime($_POST["dialog_task_deadline"]));
             if(isset($_POST["dialog_task_priority"])) {
                 $priority_dialog = $_POST["dialog_task_priority"];
                 switch ($priority_dialog) {
@@ -223,10 +258,12 @@ class DashboardController extends Controller
             echo "ok";
             return $this->render("MtsBundle:Dashboard:dashboard.html.twig", array(
                 "korisnik" => $korisnik,
+                "todoLists" => $korisnik->getTlists(),
             ));
         }
         return $this->render("MtsBundle:Dashboard:dashboard.html.twig", array(
             "korisnik" => $korisnik,
+            "todoLists" => $korisnik->getTlists(),
         ));
     }
 }

@@ -23,7 +23,7 @@ class RegisterType extends AbstractType{
     {
         $builder
             ->add("email", EmailType::class)
-            ->add("plainPassword", PasswordType::class)
+            ->add("plainPassword", PasswordType::class,array("label"=>"Password"))
             ->add("firstName", TextType::class)
             ->add("lastName", TextType::class);
 
